@@ -9,10 +9,9 @@ unit delphi_fann;
   ******************************************************** }
 // Default - single(float) FANN
 // or
-//{$DEFINE FIXEDFANN} //Uncomment for fixed fann
+// {$DEFINE FIXEDFANN} //Uncomment for fixed fann
 // or
-//{$DEFINE DOUBLEFANN} // Uncomment for double fann
-
+// {$DEFINE DOUBLEFANN} // Uncomment for double fann
 
 interface
 
@@ -52,8 +51,8 @@ Type
   ppfann_type = ^pfann_type;
 
   fann_type_array = array [word] of fann_type;
-  pfann_type_array = ^fann_type_array;
-  ppfann_type_array = array [word] of ^fann_type_array;
+  pfann_type_array = pfann_type;//^fann_type_array;
+  ppfann_type_array = ^pfann_type_array;//array [word] of ^fann_type_array;
 
   (* MICROSOFT VC++ STDIO'S FILE DEFINITION *)
   _iobuf = record
@@ -669,7 +668,32 @@ Type
   (* forward declarations for use with the callback *)
   // struct fann;
   pfann = ^Tfann;
-  pfann_train_data = pointer; // !!!!!!!!!
+  // pfann_train_data = pointer; // !!!!!!!!!
+  pfann_train_data = ^Tfann_train_data;
+  (* Struct: struct fann_train_data
+    Structure used to store data, for use with training.
+
+    The data inside this structure should never be manipulated directly, but should use some
+    of the supplied functions in <Training Data Manipulation>.
+
+    The training data structure is very usefull for storing data during training and testing of a
+    neural network.
+
+    See also:
+    <fann_read_train_from_file>, <fann_train_on_data>, <fann_destroy_train>
+  *)
+
+  Tfann_train_data = record
+    errno_f: integer; // enum fann_errno_enum errno_f;
+    error_log: PFile; // FILE *error_log;
+    errstr: PFANNChar; // char *errstr;
+
+    num_data: Cardinal; // unsigned int num_data;
+    num_input: Cardinal; // unsigned int num_input;
+    num_output: Cardinal; // unsigned int num_output;
+    input: ppfann_type_array; // fann_type **input;
+    output: ppfann_type_array; // fann_type **output;
+  end;
 
   (* Type: fann_callback_type
     This callback function can be called during training when using <fann_train_on_data>,
@@ -2408,59 +2432,29 @@ function fann_get_multiplier(ann: pfann): Cardinal; stdcall;
   is supported by <FANN Cascade Training>.
 *)
 
-Type
+(* Section: FANN Training *)
 
-  (* Struct: struct fann_train_data
-    Structure used to store data, for use with training.
-
-    The data inside this structure should never be manipulated directly, but should use some
-    of the supplied functions in <Training Data Manipulation>.
-
-    The training data structure is very usefull for storing data during training and testing of a
-    neural network.
-
-    See also:
-    <fann_read_train_from_file>, <fann_train_on_data>, <fann_destroy_train>
-  *)
-  // pfann_train_data = ^Tfann_train_data;
-
-  Tfann_train_data = record
-
-    errno_f: integer; // enum fann_errno_enum errno_f;
-    error_log: PFile; // FILE *error_log;
-    errstr: PFANNChar; // char *errstr;
-
-    num_data: Cardinal; // unsigned int num_data;
-    num_input: Cardinal; // unsigned int num_input;
-    num_output: Cardinal; // unsigned int num_output;
-    input: ppfann_type_array; // fann_type **input;
-    output: ppfann_type_array; // fann_type **output;
-  end;
-
-  (* Section: FANN Training *)
-
-  (* Group: Training *)
+(* Group: Training *)
 
 {$IFNDEF FIXEDFANN}
+(* Function: fann_train
 
-  (* Function: fann_train
+  Train one iteration with a set of inputs, and a set of desired outputs.
+  This training is always incremental training (see <fann_train_enum>), since
+  only one pattern is presented.
 
-    Train one iteration with a set of inputs, and a set of desired outputs.
-    This training is always incremental training (see <fann_train_enum>), since
-    only one pattern is presented.
+  Parameters:
+  ann - The neural network structure
+  input - an array of inputs. This array must be exactly <fann_get_num_input> long.
+  desired_output - an array of desired outputs. This array must be exactly <fann_get_num_output> long.
 
-    Parameters:
-    ann - The neural network structure
-    input - an array of inputs. This array must be exactly <fann_get_num_input> long.
-    desired_output - an array of desired outputs. This array must be exactly <fann_get_num_output> long.
+  See also:
+  <fann_train_on_data>, <fann_train_epoch>
 
-    See also:
-    <fann_train_on_data>, <fann_train_epoch>
-
-    This function appears in FANN >= 1.0.0.
-  *)
-  // FANN_EXTERNAL void FANN_API fann_train(struct fann *ann, fann_type * input,
-  // fann_type * desired_output);
+  This function appears in FANN >= 1.0.0.
+*)
+// FANN_EXTERNAL void FANN_API fann_train(struct fann *ann, fann_type * input,
+// fann_type * desired_output);
 procedure fann_train(ann: pfann; input: pfann_type; Desired_Output: pfann_type); stdcall;
 
 {$ENDIF}	(* NOT FIXEDFANN *)
@@ -2633,7 +2627,7 @@ function fann_test_data(ann: pfann; Data: pfann_train_data): Float; stdcall;
   This function appears in FANN >= 1.0.0
 *)
 // FANN_EXTERNAL struct fann_train_data *FANN_API fann_read_train_from_file(const char *filename);
-function fann_read_train_from_file(const Filename: PFANNChar): pfann_train_data; stdcall;//stdcall;
+function fann_read_train_from_file(const Filename: PFANNChar): pfann_train_data; stdcall; // stdcall;
 
 (* Function: fann_create_train
   Creates an empty training data struct.
@@ -3394,7 +3388,7 @@ function fann_get_train_stop_function(ann: pfann): integer; stdcall;
 *)
 // FANN_EXTERNAL void FANN_API fann_set_train_stop_function(struct fann *ann,
 // enum fann_stopfunc_enum train_stop_function);
-procedure fann_set_train_stop_function(ann: pfann; train_stop_function: Integer); stdcall;
+procedure fann_set_train_stop_function(ann: pfann; train_stop_function: integer); stdcall;
 
 (* Function: fann_get_bit_fail_limit
 

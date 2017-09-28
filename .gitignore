@@ -47,3 +47,4 @@ Release/
 *.user
 
 #ResourceFiles
+/result/*.*

@@ -26,6 +26,7 @@ Type
   PFANNChar = PAnsiChar;
   Float = Single;
   pFloat = ^Float;
+  TEnumType = Cardinal;
 
   (* Type: fann_type
     fann_type is the type used for the weights, inputs and outputs of the neural network.
@@ -51,8 +52,8 @@ Type
   ppfann_type = ^pfann_type;
 
   fann_type_array = array [word] of fann_type;
-  pfann_type_array = pfann_type;//^fann_type_array;
-  ppfann_type_array = ^pfann_type_array;//array [word] of ^fann_type_array;
+  pfann_type_array = pfann_type; // ^fann_type_array;
+  ppfann_type_array = ^pfann_type_array; // array [word] of ^fann_type_array;
 
   (* MICROSOFT VC++ STDIO'S FILE DEFINITION *)
   _iobuf = record
@@ -86,8 +87,6 @@ const
 
 const
   RAND_MAX = $7FFF;
-  decimal_point = 1; // ??????????????
-  multiplier = 100; // ??????????????
 
   FANN_FIX_VERSION = 'FANN_FIX_2.0';
   FANN_FLO_VERSION = 'FANN_FLO_2.1';
@@ -407,6 +406,11 @@ function fann_activation_switch(activation_function: integer; value: fann_type):
   <fann_set_training_algorithm>, <fann_get_training_algorithm>
 *)
 // enum fann_train_enum
+
+Type
+
+  Tfann_train_enum = TEnumType;
+
 const
   FANN_TRAIN_INCREMENTAL = 0;
   FANN_TRAIN_BATCH = 1;
@@ -531,7 +535,11 @@ const
     <fann_set_activation_function>
   *)
   // enum fann_activationfunc_enum
+Type
+  Tfann_activationfunc_enum = TEnumType;
+  pfann_activationfunc_enum = ^Tfann_activationfunc_enum;
 
+Const
   FANN_LINEAR = 0;
   FANN_THRESHOLD = 1;
   FANN_THRESHOLD_SYMMETRIC = 2;
@@ -584,7 +592,10 @@ const
     <fann_set_train_error_function>, <fann_get_train_error_function>
   *)
   // enum fann_errorfunc_enum
+Type
+  Tfann_errorfunc_enum = TEnumType;
 
+Const
   FANN_ERRORFUNC_LINEAR = 0;
   FANN_ERRORFUNC_TANH = 1;
 
@@ -615,7 +626,10 @@ const
     <fann_set_train_stop_function>, <fann_get_train_stop_function>
   *)
   // enum fann_stopfunc_enum
+Type
+  Tfann_stopfunc_enum = TEnumType;
 
+Const
   FANN_STOPFUNC_MSE = 0;
   FANN_STOPFUNC_BIT = 1;
 
@@ -645,6 +659,11 @@ const
     This enumeration appears in FANN >= 2.1.0
   *)
   // enum fann_nettype_enum
+Type
+  Tfann_nettype_enum = TEnumType;
+  Tfann_errno_enum = TEnumType; // forward declaration
+
+Const
   FANN_NETTYPE_LAYER = 0; (* Each layer only has connections to the next layer *)
   FANN_NETTYPE_SHORTCUT = 1; (* Each layer has connections to all following layers *)
 
@@ -684,7 +703,7 @@ Type
   *)
 
   Tfann_train_data = record
-    errno_f: integer; // enum fann_errno_enum errno_f;
+    errno_f: Tfann_errno_enum; // enum fann_errno_enum errno_f;
     error_log: PFile; // FILE *error_log;
     errstr: PFANNChar; // char *errstr;
 
@@ -752,7 +771,7 @@ Type
     (* The steepness of the activation function *)
     activation_steepness: fann_type; // fann_type activation_steepness;
     (* Used to choose which activation function to use *)
-    activation_function: integer; // enum fann_activationfunc_enum activation_function;
+    activation_function: Tfann_activationfunc_enum; // enum fann_activationfunc_enum activation_function;
   end;
 
   (* A single layer in the neural network.
@@ -784,7 +803,7 @@ Type
   pfann_error = ^Tfann_error;
 
   Tfann_error = record
-    errno_f: integer; // enum fann_errno_enum errno_f;
+    errno_f: Tfann_errno_enum; // enum fann_errno_enum errno_f;
     error_log: PFile; // FILE *error_log;
     errstr: PFANNChar; // char *errstr;
   end;
@@ -804,7 +823,7 @@ Type
 
   Tfann = record
     (* The type of error that last occured. *)
-    errno_f: integer; // enum fann_errno_enum errno_f;
+    errno_f: Tfann_errno_enum; // enum fann_errno_enum errno_f;
 
     (* Where to log error messages. *)
     error_log: PFile; // FILE *error_log;
@@ -828,7 +847,7 @@ Type
       * A fully connected ann with shortcut connections are a ann where
       * neurons have connections to all neurons in all later layers.
     *)
-    network_type: integer; // enum fann_nettype_enum network_type;
+    network_type: Tfann_nettype_enum; // enum fann_nettype_enum network_type;
 
     (* pointer to the first layer (input layer) in an array af all the layers,
       * including the input and outputlayers
@@ -865,7 +884,7 @@ Type
 
     (* Training algorithm used when calling fann_train_on_..
     *)
-    training_algorithm: integer; // enum fann_train_enum training_algorithm;
+    training_algorithm: Tfann_train_enum; // enum fann_train_enum training_algorithm;
 
 {$IFDEF FIXEDFANN}
     (* the decimal_point, used for shifting the fix point
@@ -920,11 +939,11 @@ Type
 
     (* The error function used during training. (default FANN_ERRORFUNC_TANH)
     *)
-    train_error_function: integer; // enum fann_errorfunc_enum train_error_function;
+    train_error_function: Tfann_errorfunc_enum; // enum fann_errorfunc_enum train_error_function;
 
     (* The stop function used during training. (default FANN_STOPFUNC_MSE)
     *)
-    train_stop_function: integer; // enum fann_stopfunc_enum train_stop_function;
+    train_stop_function: Tfann_stopfunc_enum; // enum fann_stopfunc_enum train_stop_function;
 
     (* The callback function used during training. (default NULL)
     *)
@@ -989,7 +1008,7 @@ Type
     (* An array consisting of the activation functions used when doing
       * cascade training.
     *)
-    cascade_activation_functions: PInteger; // enum fann_activationfunc_enum *cascade_activation_functions;
+    cascade_activation_functions: Tfann_activationfunc_enum; // enum fann_activationfunc_enum *cascade_activation_functions;
 
     (* The number of elements in the cascade_activation_functions array.
     *)
@@ -1196,6 +1215,9 @@ const
     FANN_E_OUTPUT_NO_MATCH - The number of output neurons in the ann and data don't match
   *)
   // enum fann_errno_enum
+  // Type Tfann_errno_enum = TEnumType;
+
+const
   FANN_E_NO_ERROR = 0;
   FANN_E_CANT_OPEN_CONFIG_R = 1;
   FANN_E_CANT_OPEN_CONFIG_W = 2;
@@ -1251,7 +1273,7 @@ procedure fann_set_error_log(errdat: pfann_error; Log_File: PFile); stdcall;
   This function appears in FANN >= 1.1.0.
 *)
 // FANN_EXTERNAL enum fann_errno_enum FANN_API fann_get_errno(struct fann_error *errdat);
-function fann_get_errno(errdat: pfann_error): integer; stdcall;
+function fann_get_errno(errdat: pfann_error): Tfann_errno_enum; stdcall;
 
 (* Function: fann_reset_errno
 
@@ -1809,7 +1831,7 @@ function fann_get_cascade_activation_functions_count(ann: pfann): Cardinal; stdc
 *)
 // FANN_EXTERNAL enum fann_activationfunc_enum * FANN_API fann_get_cascade_activation_functions(
 // struct fann *ann);
-function fann_get_cascade_activation_functions(ann: pfann): PInteger; stdcall;
+function fann_get_cascade_activation_functions(ann: pfann): pfann_activationfunc_enum; stdcall;
 
 (* Function: fann_set_cascade_activation_functions
 
@@ -1829,7 +1851,7 @@ function fann_get_cascade_activation_functions(ann: pfann): PInteger; stdcall;
 // cascade_activation_functions,
 // unsigned int
 // cascade_activation_functions_count);
-procedure fann_set_cascade_activation_functions(ann: pfann; cascade_activation_functions: PInteger;
+procedure fann_set_cascade_activation_functions(ann: pfann; cascade_activation_functions: pfann_activationfunc_enum;
   cascade_activation_functions_count: Cardinal); stdcall;
 
 (* Function: fann_get_cascade_activation_steepnesses_count
@@ -2214,7 +2236,7 @@ function fann_get_total_connections(ann: pfann): Cardinal; stdcall;
   This function appears in FANN >= 2.1.0
 *)
 // FANN_EXTERNAL enum fann_nettype_enum FANN_API fann_get_network_type(struct fann *ann);
-function fann_get_network_type(ann: pfann): integer; stdcall;
+function fann_get_network_type(ann: pfann): Tfann_nettype_enum; stdcall;
 
 (* Function: fann_get_connection_rate
 
@@ -3044,7 +3066,7 @@ function fann_save_train_to_fixed(Data: pfann_train_data; const Filename: PFANNC
   This function appears in FANN >= 1.0.0.
 *)
 // FANN_EXTERNAL enum fann_train_enum FANN_API fann_get_training_algorithm(struct fann *ann);
-function fann_get_training_algorithm(ann: pfann): integer; stdcall;
+function fann_get_training_algorithm(ann: pfann): Tfann_train_enum; stdcall;
 
 (* Function: fann_set_training_algorithm
 
@@ -3056,7 +3078,7 @@ function fann_get_training_algorithm(ann: pfann): integer; stdcall;
 *)
 // FANN_EXTERNAL void FANN_API fann_set_training_algorithm(struct fann *ann,
 // enum fann_train_enum training_algorithm);
-procedure fann_set_training_algorithm(ann: pfann; training_algorithm: integer); stdcall;
+procedure fann_set_training_algorithm(ann: pfann; training_algorithm: Tfann_train_enum); stdcall;
 
 (* Function: fann_get_learning_rate
 
@@ -3139,7 +3161,7 @@ procedure fann_set_learning_momentum(ann: pfann; learning_momentum: Float); stdc
 // FANN_EXTERNAL enum fann_activationfunc_enum FANN_API fann_get_activation_function(struct fann *ann,
 // int layer,
 // int neuron);
-function fann_get_activation_function(ann: pfann; layer: integer; neuron: integer): integer; stdcall;
+function fann_get_activation_function(ann: pfann; layer: integer; neuron: integer): Tfann_activationfunc_enum; stdcall;
 
 (* Function: fann_set_activation_function
 
@@ -3168,7 +3190,8 @@ function fann_get_activation_function(ann: pfann; layer: integer; neuron: intege
 // activation_function,
 // int layer,
 // int neuron);
-procedure fann_set_activation_function(ann: pfann; activation_function: integer; layer: integer; neuron: integer); stdcall;
+procedure fann_set_activation_function(ann: pfann; activation_function: Tfann_activationfunc_enum; layer: integer;
+  neuron: integer); stdcall;
 
 (* Function: fann_set_activation_function_layer
 
@@ -3187,7 +3210,7 @@ procedure fann_set_activation_function(ann: pfann; activation_function: integer;
 // enum fann_activationfunc_enum
 // activation_function,
 // int layer);
-procedure fann_set_activation_function_layer(ann: pfann; activation_function: integer; layer: integer); stdcall;
+procedure fann_set_activation_function_layer(ann: pfann; activation_function: Tfann_activationfunc_enum; layer: integer); stdcall;
 
 (* Function: fann_set_activation_function_hidden
 
@@ -3202,7 +3225,7 @@ procedure fann_set_activation_function_layer(ann: pfann; activation_function: in
 // FANN_EXTERNAL void FANN_API fann_set_activation_function_hidden(struct fann *ann,
 // enum fann_activationfunc_enum
 // activation_function);
-procedure fann_set_activation_function_hidden(ann: pfann; activation_function: integer); stdcall;
+procedure fann_set_activation_function_hidden(ann: pfann; activation_function: Tfann_activationfunc_enum); stdcall;
 
 (* Function: fann_set_activation_function_output
 
@@ -3217,7 +3240,7 @@ procedure fann_set_activation_function_hidden(ann: pfann; activation_function: i
 // FANN_EXTERNAL void FANN_API fann_set_activation_function_output(struct fann *ann,
 // enum fann_activationfunc_enum
 // activation_function);
-procedure fann_set_activation_function_output(ann: pfann; activation_function: integer); stdcall;
+procedure fann_set_activation_function_output(ann: pfann; activation_function: Tfann_activationfunc_enum); stdcall;
 
 (* Function: fann_get_activation_steepness
 
@@ -3339,7 +3362,7 @@ procedure fann_set_activation_steepness_output(ann: pfann; steepness: fann_type)
   This function appears in FANN >= 1.2.0.
 *)
 // FANN_EXTERNAL enum fann_errorfunc_enum FANN_API fann_get_train_error_function(struct fann *ann);
-function fann_get_train_error_function(ann: pfann): integer; stdcall;
+function fann_get_train_error_function(ann: pfann): Tfann_errorfunc_enum; stdcall;
 
 (* Function: fann_set_train_error_function
 
@@ -3355,7 +3378,7 @@ function fann_get_train_error_function(ann: pfann): integer; stdcall;
 // FANN_EXTERNAL void FANN_API fann_set_train_error_function(struct fann *ann,
 // enum fann_errorfunc_enum
 // train_error_function);
-procedure fann_set_train_error_function(ann: pfann; train_error_function: integer); stdcall;
+procedure fann_set_train_error_function(ann: pfann; train_error_function: Tfann_errorfunc_enum); stdcall;
 
 (* Function: fann_get_train_stop_function
 
@@ -3371,7 +3394,7 @@ procedure fann_set_train_error_function(ann: pfann; train_error_function: intege
   This function appears in FANN >= 2.0.0.
 *)
 // FANN_EXTERNAL enum fann_stopfunc_enum FANN_API fann_get_train_stop_function(struct fann *ann);
-function fann_get_train_stop_function(ann: pfann): integer; stdcall;
+function fann_get_train_stop_function(ann: pfann): Tfann_stopfunc_enum; stdcall;
 
 (* Function: fann_set_train_stop_function
 
@@ -3388,7 +3411,7 @@ function fann_get_train_stop_function(ann: pfann): integer; stdcall;
 *)
 // FANN_EXTERNAL void FANN_API fann_set_train_stop_function(struct fann *ann,
 // enum fann_stopfunc_enum train_stop_function);
-procedure fann_set_train_stop_function(ann: pfann; train_stop_function: integer); stdcall;
+procedure fann_set_train_stop_function(ann: pfann; train_stop_function: Tfann_stopfunc_enum); stdcall;
 
 (* Function: fann_get_bit_fail_limit
 

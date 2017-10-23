@@ -1,2 +1,4 @@
-# Delphi-FANN
-Fast Artificial Neural Network Library (FANN) v2.2.0
+## Delphi wrapper for Artificial Neural Network Library (FANN, TensorFlow)
+Fast Artificial Neural Network Library (FANN) v2.2.0 (Original: https://github.com/libfann/fann) 
+Fast Artificial Neural Network Library (FANN) v2.2.0 (https://github.com/hatsunearu/fann with FANN_RELU and FANN_LEAKY_RELU)
+TensorFlow 1.3.0

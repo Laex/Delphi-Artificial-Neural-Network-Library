@@ -18,6 +18,8 @@ unit delphi_fann;
 
 interface
 
+Uses System.SysUtils;
+
 // --------------------- config.pas --------------------
 
 (* Version number of package *)
@@ -205,6 +207,7 @@ function fann_max(x, y: fann_type): fann_type; inline;
 // #define fann_min(x, y) (((x) < (y)) ? (x) : (y))
 function fann_min(x, y: fann_type): fann_type; inline;
 // #define fann_safe_free(x) {if(x) { free(x); x = NULL; }}
+procedure fann_safe_free(Var x: Pointer); inline;
 // #define fann_clip(x, lo, hi) (((x) < (lo)) ? (lo) : (((x) > (hi)) ? (hi) : (x)))
 function fann_clip(x, lo, hi: fann_type): fann_type; inline;
 
@@ -965,7 +968,7 @@ Type
 
     (* A pointer to user defined data. (default NULL)
     *)
-    user_data: pointer; // void *user_data;
+    user_data: Pointer; // void *user_data;
 
     (* Variables for use with Cascade Correlation *)
 
@@ -2429,7 +2432,7 @@ procedure fann_set_weight(ann: pfann; from_neuron: Cardinal; to_neuron: Cardinal
   This function appears in FANN >= 2.1.0
 *)
 // FANN_EXTERNAL void FANN_API fann_set_user_data(struct fann *ann, void *user_data);
-procedure fann_set_user_data(ann: pfann; user_data: pointer); stdcall; external FANN_DLL_FILE name '_fann_set_user_data@8';
+procedure fann_set_user_data(ann: pfann; user_data: Pointer); stdcall; external FANN_DLL_FILE name '_fann_set_user_data@8';
 
 (* Function: fann_get_user_data
 
@@ -2447,7 +2450,7 @@ procedure fann_set_user_data(ann: pfann; user_data: pointer); stdcall; external 
   This function appears in FANN >= 2.1.0
 *)
 // FANN_EXTERNAL void * FANN_API fann_get_user_data(struct fann *ann);
-function fann_get_user_data(ann: pfann): pointer; stdcall; external FANN_DLL_FILE name '_fann_get_user_data@4';
+function fann_get_user_data(ann: pfann): Pointer; stdcall; external FANN_DLL_FILE name '_fann_get_user_data@4';
 
 {$IFDEF FIXEDFANN}
 (* Function: fann_get_decimal_point
@@ -3888,6 +3891,11 @@ begin
     result := x
   else
     result := y;
+end;
+
+procedure fann_safe_free;
+begin
+  FreeAndNil(x);
 end;
 
 function fann_clip;

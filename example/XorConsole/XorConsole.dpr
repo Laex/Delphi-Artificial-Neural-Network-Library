@@ -18,7 +18,7 @@ begin
   try
     ann := fann_create_standard(3, 2, 3, 1);
 
-    train_data := fann_read_train_from_file('..\datasets\xor.data');
+    train_data := fann_read_train_from_file('..\..\datasets\xor.data');
 
     fann_set_activation_steepness_hidden(ann, 0.5);
     fann_set_activation_steepness_output(ann, 0.5);

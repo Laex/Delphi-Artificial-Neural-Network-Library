@@ -27,8 +27,8 @@ begin
 
     WriteLn('Reading data.');
 
-    train_data := fann_read_train_from_file('..\datasets\parity8.train');
-    test_data := fann_read_train_from_file('..\datasets\parity8.test');
+    train_data := fann_read_train_from_file('..\..\datasets\parity8.train');
+    test_data := fann_read_train_from_file('..\..\datasets\parity8.test');
 
     fann_scale_train_data(train_data, -1, 1);
     fann_scale_train_data(test_data, -1, 1);
@@ -64,7 +64,7 @@ begin
     fann_set_train_stop_function(ann, FANN_STOPFUNC_BIT);
     fann_print_parameters(ann);
 
-    fann_save(ann, '..\result\cascade_train2.net');
+    fann_save(ann, '..\..\result\cascade_train2.net');
 
     WriteLn('Training network.');
 
@@ -89,7 +89,7 @@ begin
 
     WriteLn('Saving network.');
 
-    fann_save(ann, '..\result\cascade_train.net');
+    fann_save(ann, '..\..\result\cascade_train.net');
 
     WriteLn('Cleaning up.');
     fann_destroy_train(train_data);

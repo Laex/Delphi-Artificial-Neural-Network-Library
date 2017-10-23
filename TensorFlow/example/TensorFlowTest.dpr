@@ -5,7 +5,7 @@ program TensorFlowTest;
 
 uses
   System.SysUtils,
-  tensorflow in 'tensorflow.pas';
+  tensorflow in '..\source\tensorflow.pas';
 
 Var
   V: pTFChar;
